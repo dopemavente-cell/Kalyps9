@@ -1,21 +1,21 @@
 export default async function handler(event) {
-    // Parse le body JSON envoyé par ton front
+    // Parse le body JSON
     let body = {};
     try {
         body = JSON.parse(event.body || "{}");
     } catch (e) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "Invalid JSON" })
-        };
+        return new Response(
+            JSON.stringify({ error: "Invalid JSON" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+        );
     }
 
     const action = body.action;
     if (!action) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "Missing action" })
-        };
+        return new Response(
+            JSON.stringify({ error: "Missing action" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+        );
     }
 
     // Appel à Mistral
@@ -42,10 +42,10 @@ Le joueur est un journaliste sans compétences de combat."
 
     const data = await response.json();
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
+    return new Response(
+        JSON.stringify({
             reply: data.choices?.[0]?.message?.content || "Erreur IA"
-        })
-    };
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+    );
 }
