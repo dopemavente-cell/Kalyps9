@@ -17,7 +17,6 @@
         height: 100vh;
     }
 
-    /* Zone image interactive */
     #scene {
         height: 35vh;
         background: url('IMAGE_PANORAMA.jpg') center/cover no-repeat;
@@ -32,7 +31,6 @@
         background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.6));
     }
 
-    /* Chat */
     #chat {
         flex: 1;
         overflow-y: auto;
@@ -58,7 +56,6 @@
         margin-left: auto;
     }
 
-    /* Champ d'action */
     #inputZone {
         display: flex;
         padding: 10px;
@@ -95,10 +92,8 @@
 
 <body>
 
-<!-- IMAGE INTERACTIVE -->
 <div id="scene"></div>
 
-<!-- CHAT -->
 <div id="chat">
     <div class="message ia">
         Bienvenue sur Kalyps‑9. La brume acide danse entre les néons.  
@@ -106,7 +101,6 @@
     </div>
 </div>
 
-<!-- INPUT -->
 <div id="inputZone">
     <input id="actionInput" type="text" placeholder="Écris ton action..." />
     <button id="sendBtn">→</button>
@@ -125,26 +119,26 @@
         chat.scrollTop = chat.scrollHeight;
     }
 
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
         const action = input.value.trim();
         if (!action) return;
 
         addMessage(action, "user");
         input.value = "";
 
-        // 🔥 APPEL À TA FONCTION IA (MISTRAL VIA NETLIFY)
-        fetch("/.netlify/functions/ia", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action })
-        })
-        .then(res => res.json())
-        .then(data => {
-            addMessage(data.reply, "ia");
-        })
-        .catch(err => {
+        try {
+            const res = await fetch("/.netlify/functions/ia", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action })
+            });
+
+            const data = await res.json();
+            addMessage(data.reply || "Réponse vide de l’IA.", "ia");
+
+        } catch (err) {
             addMessage("Erreur de connexion à l’IA.", "ia");
-        });
+        }
     });
 </script>
 
