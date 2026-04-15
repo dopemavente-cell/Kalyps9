@@ -25,7 +25,6 @@
         border-bottom: 2px solid #222;
     }
 
-    /* Effet de glissement */
     #scene::after {
         content: "";
         position: absolute;
@@ -126,20 +125,6 @@
         chat.scrollTop = chat.scrollHeight;
     }
 
-    // Simulation IA (à remplacer par ton API plus tard)
-    function fakeIAResponse(action) {
-        if (action.toLowerCase().includes("regarde")) {
-            return "Tu observes autour de toi. Un drone flotte dans l’ombre, son œil rouge clignotant.";
-        }
-        if (action.toLowerCase().includes("fuis")) {
-            return "Tu t’élances dans la ruelle. La brume pique tes yeux. Des pas résonnent derrière toi.";
-        }
-        if (action.toLowerCase().includes("cache")) {
-            return "Tu te glisses derrière un conteneur métallique. Le bruit des bottes se rapproche.";
-        }
-        return "Ton cœur bat fort. La ville semble retenir son souffle. Que fais-tu ensuite ?";
-    }
-
     btn.addEventListener("click", () => {
         const action = input.value.trim();
         if (!action) return;
@@ -147,10 +132,19 @@
         addMessage(action, "user");
         input.value = "";
 
-        setTimeout(() => {
-            const response = fakeIAResponse(action);
-            addMessage(response, "ia");
-        }, 400);
+        // 🔥 APPEL À TA FONCTION IA (MISTRAL VIA NETLIFY)
+        fetch("/.netlify/functions/ia", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action })
+        })
+        .then(res => res.json())
+        .then(data => {
+            addMessage(data.reply, "ia");
+        })
+        .catch(err => {
+            addMessage("Erreur de connexion à l’IA.", "ia");
+        });
     });
 </script>
 
