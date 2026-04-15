@@ -40,14 +40,10 @@ Le joueur est un journaliste sans compétences de combat."
 
     const data = await response.json();
 
-    const reply =
-        data.choices?.[0]?.message?.content ||
-        data.choices?.[0]?.delta?.content ||
-        data.choices?.[0]?.text ||
-        "Réponse vide";
-
+    // 🔥 DEBUG : renvoie la réponse brute pour voir ce que Mistral envoie
+    // (temporaire, juste pour comprendre)
     return new Response(
-        JSON.stringify({ reply }),
+        JSON.stringify({ debug: data }),
         { status: 200, headers: { "Content-Type": "application/json" } }
     );
 }
