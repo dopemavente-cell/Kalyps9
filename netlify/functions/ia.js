@@ -1,5 +1,16 @@
 export default async function handler(req, res) {
-    const { action } = req.body;
+    let body = {};
+
+    try {
+        body = JSON.parse(req.body || "{}");
+    } catch (e) {
+        return res.status(400).json({ error: "Invalid JSON" });
+    }
+
+    const action = body.action;
+    if (!action) {
+        return res.status(400).json({ error: "Missing action" });
+    }
 
     const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
         method: "POST",
