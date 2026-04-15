@@ -1,5 +1,4 @@
 export default async function handler(event) {
-    // Parse le body JSON
     let body = {};
     try {
         body = JSON.parse(event.body || "{}");
@@ -18,7 +17,6 @@ export default async function handler(event) {
         );
     }
 
-    // Appel à Mistral
     const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -42,10 +40,14 @@ Le joueur est un journaliste sans compétences de combat."
 
     const data = await response.json();
 
+    const reply =
+        data.choices?.[0]?.message?.content ||
+        data.choices?.[0]?.delta?.content ||
+        data.choices?.[0]?.text ||
+        "Réponse vide";
+
     return new Response(
-        JSON.stringify({
-            reply: data.choices?.[0]?.message?.content || "Erreur IA"
-        }),
+        JSON.stringify({ reply }),
         { status: 200, headers: { "Content-Type": "application/json" } }
     );
 }
