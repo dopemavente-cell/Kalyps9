@@ -26,13 +26,7 @@ export default async function handler(event) {
         body: JSON.stringify({
             model: "mistral-small-latest",
             messages: [
-                {
-                    role: "system",
-                    content:
-"Tu es la narration de Kalyps‑9. Style sombre, réaliste, nerveux. \
-Pas de pouvoirs impossibles. Pas de violence graphique. \
-Le joueur est un journaliste sans compétences de combat."
-                },
+                { role: "system", content: "Tu es la narration de Kalyps‑9." },
                 { role: "user", content: action }
             ]
         })
@@ -40,10 +34,9 @@ Le joueur est un journaliste sans compétences de combat."
 
     const data = await response.json();
 
-    // 🔥 DEBUG : renvoie la réponse brute pour voir ce que Mistral envoie
-    // (temporaire, juste pour comprendre)
+    // 🔥 On renvoie TOUT tel quel
     return new Response(
-        JSON.stringify({ debug: data }),
+        JSON.stringify(data, null, 2),
         { status: 200, headers: { "Content-Type": "application/json" } }
     );
 }
