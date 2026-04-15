@@ -1,17 +1,24 @@
-export default async function handler(req, res) {
+export default async function handler(event) {
+    // Parse le body JSON envoyé par ton front
     let body = {};
-
     try {
-        body = JSON.parse(req.body || "{}");
+        body = JSON.parse(event.body || "{}");
     } catch (e) {
-        return res.status(400).json({ error: "Invalid JSON" });
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Invalid JSON" })
+        };
     }
 
     const action = body.action;
     if (!action) {
-        return res.status(400).json({ error: "Missing action" });
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Missing action" })
+        };
     }
 
+    // Appel à Mistral
     const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -34,5 +41,11 @@ Le joueur est un journaliste sans compétences de combat."
     });
 
     const data = await response.json();
-    res.status(200).json({ reply: data.choices?.[0]?.message?.content || "Erreur IA" });
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            reply: data.choices?.[0]?.message?.content || "Erreur IA"
+        })
+    };
 }
